@@ -1,6 +1,3 @@
-"""
-API Views for Event Search
-"""
 
 import os
 import tarfile
@@ -17,19 +14,6 @@ from .services import search_events, get_all_event_files
 
 @api_view(['POST', 'GET'])
 def search_events_view(request):
-    """
-    Search through event files.
-    
-    POST /api/events/search/
-    
-    Request body:
-    {
-        "search_string": "159.62.125.136",  # Optional - search in any field
-        "earliest_time": 1725850449,        # Optional - epoch timestamp
-        "latest_time": 1725855086,          # Optional - epoch timestamp
-        "max_results": 1000                 # Optional - default 1000
-    }
-    """
     if request.method == 'GET':
         data = request.query_params
     else:
@@ -59,16 +43,6 @@ def search_events_view(request):
 @api_view(['POST'])
 @parser_classes([MultiPartParser, FormParser])
 def upload_files_view(request):
-    """
-    Upload event files.
-    
-    POST /api/events/upload/
-    Content-Type: multipart/form-data
-    
-    Supports:
-    - Regular event files (saved directly)
-    - .tgz/.tar.gz archives (extracted and contents saved)
-    """
     files = request.FILES.getlist('files')
     
     if not files:
@@ -134,7 +108,6 @@ def upload_files_view(request):
 
 @api_view(['GET'])
 def health_check(request):
-    """Health check endpoint."""
     files = get_all_event_files()
     return Response({
         'status': 'healthy',

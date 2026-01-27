@@ -19,7 +19,6 @@ SEARCHABLE_FIELDS = ['account_id', 'instance_id', 'srcaddr', 'dstaddr', 'action'
 
 
 def parse_event_line(line: str, filename: str) -> Optional[Dict[str, Any]]:
-    """Parse a single event line into a dictionary."""
     parts = line.strip().split()
     if len(parts) < 15:
         return None
@@ -49,7 +48,6 @@ def parse_event_line(line: str, filename: str) -> Optional[Dict[str, Any]]:
 
 def matches_criteria(event: Dict[str, Any], search_string: Optional[str], 
                     earliest_time: Optional[int], latest_time: Optional[int]) -> bool:
-    """Check if an event matches the search criteria."""
     if earliest_time is not None:
         if event['starttime'] < earliest_time and event['endtime'] < earliest_time:
             return False
@@ -73,7 +71,6 @@ def matches_criteria(event: Dict[str, Any], search_string: Optional[str],
 
 def search_single_file(filepath: str, search_string: Optional[str],
                        earliest_time: Optional[int], latest_time: Optional[int]) -> List[Dict[str, Any]]:
-    """Search a single file for matching events."""
     results = []
     filename = os.path.basename(filepath)
     
@@ -90,7 +87,6 @@ def search_single_file(filepath: str, search_string: Optional[str],
 
 
 def get_all_event_files() -> List[str]:
-    """Get all event files from uploads directory only."""
     files = []
     
     uploads_dir = settings.UPLOADS_DIR
@@ -107,18 +103,6 @@ def search_events(search_string: Optional[str] = None,
                   earliest_time: Optional[int] = None,
                   latest_time: Optional[int] = None,
                   max_results: int = 1000) -> Dict[str, Any]:
-    """
-    Search all event files concurrently for matching events.
-    
-    Args:
-        search_string: Text to search for in event fields
-        earliest_time: Epoch timestamp for earliest event time
-        latest_time: Epoch timestamp for latest event time
-        max_results: Maximum number of results to return
-    
-    Returns:
-        Dictionary with results, search time, and metadata
-    """
     start_time = time.time()
     
     files = get_all_event_files()
