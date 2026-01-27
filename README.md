@@ -10,15 +10,13 @@ A high-performance web application for searching through event log data files, b
 - ⚡ **High Performance**: Concurrent file processing with ThreadPoolExecutor
 - 📊 **Search Metrics**: Display search time, results count, and source file
 - 🐳 **Docker Support**: One-command deployment with docker-compose
-- 🔄 **Axios Integration**: Enhanced HTTP client with interceptors and better error handling
-
 ## Tech Stack
 
 | Layer | Technology |
 |-------|------------|
 | Backend | Python 3.11, Django 4.x, Django REST Framework |
-| Frontend | React 19, TypeScript, Tailwind CSS 4, Vite 7, Axios |
-| Deployment | Docker, docker-compose, Gunicorn, Nginx |
+| Frontend | React 19, TypeScript, |
+| Deployment | Docker, docker-compose,|
 
 ## Prerequisites
 
@@ -183,21 +181,6 @@ Response:
   "events_dir": "/app/events",
   "uploads_dir": "/app/uploads"
 }
-```
-
----
-
-## Event Data Format
-
-Each event file contains space-delimited records with these fields:
-
-```
-serialno | version | account-id | instance-id | srcaddr | dstaddr | srcport | dstport | protocol | packets | bytes | starttime | endtime | action | log-status
-```
-
-**Example:**
-```
-2 2 123456789012 eni-abc123 159.62.125.136 30.55.177.194 443 80 6 10 5000 1725850449 1725855086 REJECT OK
 ```
 
 ---
