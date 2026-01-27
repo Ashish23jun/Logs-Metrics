@@ -49,11 +49,11 @@ docker-compose up --build
 This command will:
 - Build Docker images for both frontend and backend
 - Start the backend on `http://localhost:8000`
-- Start the frontend on `http://localhost:3000`
+- Start the frontend on `http://localhost:5173`
 - Mount the `events/` directory for event log files
 
 #### Step 3: Access the Application
-- **Frontend UI**: [http://localhost:3000](http://localhost:3000)
+- **Frontend UI**: [http://localhost:5173](http://localhost:5173)
 - **Backend API**: [http://localhost:8000/api/](http://localhost:8000/api/)
 - **Health Check**: [http://localhost:8000/api/health/](http://localhost:8000/api/health/)
 
@@ -273,7 +273,7 @@ wait
 **Problem**: Containers won't start
 ```bash
 # Check if ports are already in use
-lsof -i :3000
+lsof -i :5173
 lsof -i :8000
 
 # Remove old containers and rebuild
