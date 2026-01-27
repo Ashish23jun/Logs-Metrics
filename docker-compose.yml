@@ -1,0 +1,32 @@
+services:
+  backend:
+    build: ./backend
+    container_name: event-search-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./events:/app/events_data:ro
+      - uploads:/app/uploads
+    environment:
+      - DEBUG=False
+      - DJANGO_SECRET_KEY=your-secret-key-change-in-production
+      - EVENTS_DIR=/app/events_data
+      - UPLOADS_DIR=/app/uploads
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/health/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    container_name: event-search-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  uploads:
