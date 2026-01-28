@@ -10,7 +10,6 @@ class SearchRequestSerializer(serializers.Serializer):
     search_string = serializers.CharField(required=False, allow_blank=True, default='')
     earliest_time = serializers.IntegerField(required=False, allow_null=True, default=None)
     latest_time = serializers.IntegerField(required=False, allow_null=True, default=None)
-    max_results = serializers.IntegerField(required=False, default=1000, min_value=1, max_value=10000)
 
 
 class EventSerializer(serializers.Serializer):

@@ -33,8 +33,7 @@ def search_events_view(request):
     results = search_events(
         search_string=validated_data.get('search_string') or None,
         earliest_time=validated_data.get('earliest_time'),
-        latest_time=validated_data.get('latest_time'),
-        max_results=validated_data.get('max_results', 1000)
+        latest_time=validated_data.get('latest_time')
     )
     
     return Response(results)

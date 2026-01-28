@@ -101,8 +101,7 @@ def get_all_event_files() -> List[str]:
 
 def search_events(search_string: Optional[str] = None,
                   earliest_time: Optional[int] = None,
-                  latest_time: Optional[int] = None,
-                  max_results: int = 1000) -> Dict[str, Any]:
+                  latest_time: Optional[int] = None) -> Dict[str, Any]:
     start_time = time.time()
     
     files = get_all_event_files()
@@ -120,14 +119,10 @@ def search_events(search_string: Optional[str] = None,
             try:
                 file_results = future.result()
                 all_results.extend(file_results)
-                
-                if len(all_results) >= max_results * 2:
-                    break
             except Exception as e:
                 print(f"Error processing file: {e}")
     
     all_results.sort(key=lambda x: x['starttime'], reverse=True)
-    limited_results = all_results[:max_results]
     
     end_time = time.time()
     search_duration = round(end_time - start_time, 3)
@@ -136,7 +131,7 @@ def search_events(search_string: Optional[str] = None,
         'success': True,
         'search_time_seconds': search_duration,
         'total_results': len(all_results),
-        'results_returned': len(limited_results),
+        'results_returned': len(all_results),
         'files_searched': len(files),
-        'results': limited_results
+        'results': all_results
     }

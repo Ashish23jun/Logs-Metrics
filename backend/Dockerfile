@@ -11,4 +11,4 @@ RUN mkdir -p uploads
 
 EXPOSE 8000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--threads", "2", "config.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "6", "--threads", "4", "config.wsgi:application"]
