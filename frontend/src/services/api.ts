@@ -23,6 +23,7 @@ export interface Event {
 
 export interface SearchRequest {
   search_string?: string;
+  search_field?: string;
   earliest_time?: number | null;
   latest_time?: number | null;
   max_results?: number;

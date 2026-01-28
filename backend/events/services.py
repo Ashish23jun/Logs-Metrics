@@ -1,6 +1,3 @@
-"""
-Event Search Service - Core search logic with concurrent file processing
-"""
 
 import os
 import time
@@ -15,7 +12,9 @@ EVENT_FIELDS = [
     'bytes', 'starttime', 'endtime', 'action', 'log_status'
 ]
 
-SEARCHABLE_FIELDS = ['account_id', 'instance_id', 'srcaddr', 'dstaddr', 'action', 'log_status']
+SEARCHABLE_FIELDS = ['serialno', 'version', 'account_id', 'instance_id', 'srcaddr',
+    'dstaddr', 'srcport', 'dstport', 'protocol', 'packets',
+    'bytes', 'starttime', 'endtime', 'action', 'log_status']
 
 
 def parse_event_line(line: str, filename: str) -> Optional[Dict[str, Any]]:
@@ -47,7 +46,8 @@ def parse_event_line(line: str, filename: str) -> Optional[Dict[str, Any]]:
 
 
 def matches_criteria(event: Dict[str, Any], search_string: Optional[str], 
-                    earliest_time: Optional[int], latest_time: Optional[int]) -> bool:
+                    earliest_time: Optional[int], latest_time: Optional[int],
+                    search_field: Optional[str] = None) -> bool:
     if earliest_time is not None:
         if event['starttime'] < earliest_time and event['endtime'] < earliest_time:
             return False
@@ -59,10 +59,18 @@ def matches_criteria(event: Dict[str, Any], search_string: Optional[str],
     if search_string:
         search_lower = search_string.lower()
         found = False
-        for field in SEARCHABLE_FIELDS:
-            if search_lower in str(event.get(field, '')).lower():
+        
+        if search_field:
+            field_value = str(event.get(search_field, '')).lower()
+            if search_lower == field_value:
                 found = True
-                break
+        else:
+            for field in SEARCHABLE_FIELDS:
+                field_value = str(event.get(field, '')).lower()
+                if search_lower == field_value:
+                    found = True
+                    break
+        
         if not found:
             return False
     
@@ -70,7 +78,8 @@ def matches_criteria(event: Dict[str, Any], search_string: Optional[str],
 
 
 def search_single_file(filepath: str, search_string: Optional[str],
-                       earliest_time: Optional[int], latest_time: Optional[int]) -> List[Dict[str, Any]]:
+                       earliest_time: Optional[int], latest_time: Optional[int],
+                       search_field: Optional[str] = None) -> List[Dict[str, Any]]:
     results = []
     filename = os.path.basename(filepath)
     
@@ -78,7 +87,7 @@ def search_single_file(filepath: str, search_string: Optional[str],
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             for line in f:
                 event = parse_event_line(line, filename)
-                if event and matches_criteria(event, search_string, earliest_time, latest_time):
+                if event and matches_criteria(event, search_string, earliest_time, latest_time, search_field):
                     results.append(event)
     except Exception as e:
         print(f"Error reading file {filepath}: {e}")
@@ -101,7 +110,8 @@ def get_all_event_files() -> List[str]:
 
 def search_events(search_string: Optional[str] = None,
                   earliest_time: Optional[int] = None,
-                  latest_time: Optional[int] = None) -> Dict[str, Any]:
+                  latest_time: Optional[int] = None,
+                  search_field: Optional[str] = None) -> Dict[str, Any]:
     start_time = time.time()
     
     files = get_all_event_files()
@@ -111,7 +121,7 @@ def search_events(search_string: Optional[str] = None,
     
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_file = {
-            executor.submit(search_single_file, filepath, search_string, earliest_time, latest_time): filepath
+            executor.submit(search_single_file, filepath, search_string, earliest_time, latest_time, search_field): filepath
             for filepath in files
         }
         
@@ -122,7 +132,7 @@ def search_events(search_string: Optional[str] = None,
             except Exception as e:
                 print(f"Error processing file: {e}")
     
-    all_results.sort(key=lambda x: x['starttime'], reverse=True)
+    all_results.sort(key=lambda x: x['serialno'])
     
     end_time = time.time()
     search_duration = round(end_time - start_time, 3)
